@@ -45,7 +45,6 @@
       ARGUS_GO_PROMISCUOUS=yes
       ARGUS_SETUSER_ID={{ argus_user }}
       ARGUS_SETGROUP_ID={{ argus_group }}
-      ARGUS_OUTPUT_FILE={{ argus_log_dir}}/argus.ra
       ARGUS_FLOW_STATUS_INTERVAL=60
       ARGUS_MAR_STATUS_INTERVAL=300
       ARGUS_DEBUG_LEVEL=1
