@@ -1,0 +1,10 @@
+---
+
+- name: Restart rastream_service
+  service:
+    name: "{{ rastream_service }}"
+    state: restarted
+
+- name: Reload systemd in rastream
+  systemd:
+    daemon_reload: yes

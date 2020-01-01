@@ -1,0 +1,10 @@
+---
+
+rastream_package: "{{ __rastream_package }}"
+rastream_service: "{{ __rastream_service }}"
+rastream_extra_packages: []
+rastream_user: "{{ __rastream_user }}"
+rastream_group: "{{ __rastream_group }}"
+rastream_log_dir: "{{ __rastream_log_dir }}"
+rastream_extra_groups: []
+rastream_flags: ""

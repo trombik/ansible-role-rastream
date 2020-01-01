@@ -1,0 +1,5 @@
+---
+__rastream_service: rastream
+__rastream_package: argus-clients
+__rastream_user: argus
+__rastream_group: argus

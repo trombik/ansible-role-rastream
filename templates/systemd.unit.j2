@@ -1,0 +1,12 @@
+# Managed by ansible
+[Unit]
+Description=Start rastream daemon
+Documentation=man:rastream(1)
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/rastream $RASTREAM_OPTIONS
+EnvironmentFile=-/etc/{% if ansible_os_family %}default{% elif ansible_os_family == 'RedHat' %}sysconfig{% endif %}/rastream
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,27 @@
+---
+
+- name: "Include vars/{{ ansible_os_family }}.yml"
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: "Include install-{{ ansible_os_family }}.yml"
+  include: "install-{{ ansible_os_family }}.yml"
+
+- name: "Add rastream_user to rastream_extra_groups"
+  user:
+    name: "{{ rastream_user }}"
+    append: yes
+    create_home: no
+    groups: "{{ rastream_extra_groups }}"
+
+- name: Create rastream_log_dir
+  file:
+    path: "{{ rastream_log_dir }}"
+    owner: "{{ rastream_user }}"
+    group: "{{ rastream_group }}"
+    mode: 0755
+    state: directory
+
+- name: Start rastream_service
+  service:
+    name: "{{ rastream_service }}"
+    state: started
