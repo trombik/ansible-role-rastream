@@ -38,6 +38,15 @@ passed to `rcctl set rastream`.
 | `__rastream_user` | `argus` |
 | `__rastream_group` | `argus` |
 
+## FreeBSD
+
+| Variable | Default |
+|----------|---------|
+| `__rastream_service` | `rastream` |
+| `__rastream_package` | `argus3-clients` |
+| `__rastream_user` | `argus` |
+| `__rastream_group` | `argus` |
+
 # Dependencies
 
 # Example Playbook
@@ -48,6 +57,7 @@ passed to `rcctl set rastream`.
   roles:
     - trombik.argus
     - trombik.argus_clients
+    - trombik.cyrus_sasl
     - ansible-role-rastream
   pre_tasks:
     - name: Dump all hostvars
@@ -67,40 +77,48 @@ passed to `rcctl set rastream`.
       when:
         - ansible_os_family == 'FreeBSD'
   vars:
-    os_argus_flags:
-      Debian: |
-        ARGUS_OPTIONS="-F {{ argus_config_file }}"
-    argus_flags: "{{ os_argus_flags[ansible_os_family] }}"
-
+    cyrus_sasl_saslauthd_enable: no
     os_interface:
       FreeBSD: em0
       OpenBSD: em0
       Debian: eth0
       RedHat: eth0
+    os_argus_flags:
+      OpenBSD: "-F {{ argus_config_file }}"
+      FreeBSD: |
+        argus_flags='-F {{ argus_config_file }}'
+        argus_pidfile='/var/run/argus.{{ os_interface[ansible_os_family] }}.*.pid'
+      Debian: |
+        ARGUS_OPTIONS="-F {{ argus_config_file }}"
+      RedHat: |
+        ARGUS_OPTIONS="-F {{ argus_config_file }}"
+    argus_flags: "{{ os_argus_flags[ansible_os_family] }}"
     argus_config: |
       ARGUS_FLOW_TYPE="Bidirectional"
       ARGUS_FLOW_KEY="CLASSIC_5_TUPLE"
-      {% if ansible_os_family != 'Debian' and ansible_os_family != 'RedHat' %}
-      # XXX the unit file expects the command not to fork
-      ARGUS_DAEMON=yes
-      {% endif %}
       ARGUS_ACCESS_PORT=561
       ARGUS_BIND_IP="127.0.0.1"
       ARGUS_INTERFACE={{ os_interface[ansible_os_family] }}
       ARGUS_GO_PROMISCUOUS=yes
       ARGUS_SETUSER_ID={{ argus_user }}
       ARGUS_SETGROUP_ID={{ argus_group }}
-      ARGUS_OUTPUT_FILE={{ argus_log_dir}}/argus.ra
       ARGUS_FLOW_STATUS_INTERVAL=60
       ARGUS_MAR_STATUS_INTERVAL=300
       ARGUS_DEBUG_LEVEL=1
       ARGUS_FILTER="ip"
       ARGUS_SET_PID=yes
       ARGUS_PID_PATH=/var/run
+      ARGUS_MIN_SSF=0
+      ARGUS_MAX_SSF=0
+      {% if ansible_os_family != 'Debian' and ansible_os_family != 'RedHat' %}
+      # XXX the unit file expects the command not to fork
+      ARGUS_DAEMON=yes
+      {% endif %}
 
     os_rastream_flags:
       OpenBSD: ""
-      FreeBSD: ""
+      FreeBSD: |
+        rastream_args="-S 127.0.0.1 -M time 1m -w {{ rastream_log_dir }}/%Y/%m/%d/%H.%M.%S.ra"
       Debian: |
         RASTREAM_OPTIONS="-S 127.0.0.1 -M time 1m -w {{ rastream_log_dir }}/%Y/%m/%d/%H.%M.%S.ra"
       RedHat: ""
