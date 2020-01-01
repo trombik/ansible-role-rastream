@@ -1,0 +1,38 @@
+#!/bin/sh
+# Managed by ansible
+
+# $FreeBSD$
+#
+# PROVIDE: rastream
+# REQUIRE: DAEMON NETWORKING
+# KEYWORD: shutdown
+#
+# rastream_enable (bool):   Enable rastream (NO)
+# rastream_args (string):  Options to rastream ("")
+# rastream_user (string):  User name to run rastream as
+# rastream_group (string):  Group name to run rastream as
+
+. /etc/rc.subr
+
+name=rastream
+rcvar=rastream_enable
+start_precmd="${name}_precmd"
+
+load_rc_config ${name}
+
+: ${rastream_enable:="NO"}
+: ${rastream_args:=""}
+: ${rastream_user:="argus"}
+: ${rastream_group:="argus"}
+
+pidfile="/var/run/${name}/${name}.pid"
+procname="/usr/local/bin/rastream"
+command="/usr/sbin/daemon"
+command_args="-S -s info -l daemon -f -p ${pidfile} ${procname} ${rastream_args}"
+
+rastream_precmd()
+{
+	/usr/bin/install -d -m 0755 -o ${rastream_user} /var/run/${name}
+}
+
+run_rc_command "$1"

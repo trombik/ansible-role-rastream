@@ -11,6 +11,7 @@ default_group = "wheel"
 default_user = "root"
 ports = []
 extra_packages = []
+option = "-S 127.0.0.1 -M time 1m -w #{log_dir}/%Y/%m/%d/%H.%M.%S.ra"
 
 case os[:family]
 when "ubuntu"
@@ -82,11 +83,13 @@ when "ubuntu"
     its(:content) { should match(/#{Regexp.escape("RASTREAM_OPTIONS=\"-S 127.0.0.1 -M time 1m -w #{log_dir}/%Y/%m/%d/%H.%M.%S.ra\"")}/) }
   end
 when "freebsd"
-  describe file("/etc/rc.conf.d") do
-    it { should be_directory }
+  describe file("/usr/local/etc/rc.d/rastream") do
+    it { should exist }
+    it { should be_file }
     it { should be_mode 755 }
     it { should be_owned_by default_user }
     it { should be_grouped_into default_group }
+    its(:content) { should match(/Managed by ansible/) }
   end
 
   describe file("/etc/rc.conf.d/#{service}") do
@@ -95,6 +98,7 @@ when "freebsd"
     it { should be_owned_by default_user }
     it { should be_grouped_into default_group }
     its(:content) { should match(/Managed by ansible/) }
+    its(:content) { should match(/#{Regexp.escape("rastream_args=\"#{option}\"")}/) }
   end
 end
 
