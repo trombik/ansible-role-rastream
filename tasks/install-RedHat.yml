@@ -1,27 +1,45 @@
 ---
 
-- name: Install template_role_extra_packages
+- name: Install rastream_extra_packages
   yum:
-    name: "{{ template_role_extra_packages }}"
+    name: "{{ rastream_extra_packages }}"
     state: present
 
-- name: Install template_role_package
+- name: Install rastream_package
   yum:
-    name: "{{ template_role_package }}"
+    name: "{{ rastream_package }}"
     state: present
 
-- name: Enable template_role_service
-  service:
-    name: "{{ template_role_service }}"
-    enabled: yes
+- name: Create symlink to /usr/lib64/sasl2
+  # XXX workaround hard-coded path to /usr/lib/sasl2
+  file:
+    src: /usr/lib64/sasl2
+    dest: /usr/lib/sasl2
+    state: link
+  when:
+    - ansible_userspace_bits == "64"
 
-- name: "Create /etc/sysconfig/{{ template_role_service }}"
+- name: "Create /etc/sysconfig/{{ rastream_service }}"
   template:
     src: RedHat.sysconfig.j2
-    dest: "/etc/sysconfig/{{ template_role_service }}"
+    dest: "/etc/sysconfig/{{ rastream_service }}"
     mode: 0644
     # keep the original copy in case you need the defaults in it
     backup: yes
     validate: sh -n %s
   notify:
-    - Restart template_role_service
+    - Restart rastream_service
+
+- name: Create systemd unit file
+  template:
+    src: systemd.unit.j2
+    dest: "/lib/systemd/system/{{ rastream_service }}.service"
+    mode: '0644'
+  notify:
+    - Reload systemd in rastream
+    - Restart rastream_service
+
+- name: Enable rastream_service
+  service:
+    name: "{{ rastream_service }}"
+    enabled: yes

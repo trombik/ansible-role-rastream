@@ -17,6 +17,9 @@ case os[:family]
 when "ubuntu"
   systemd_unit_file = "/lib/systemd/system/rastream.service"
   default_group = "root"
+when "redhat"
+  systemd_unit_file = "/lib/systemd/system/rastream.service"
+  default_group = "root"
 end
 
 extra_packages.each do |p|
@@ -72,6 +75,13 @@ when "redhat"
     it { should be_owned_by default_user }
     it { should be_grouped_into default_group }
     its(:content) { should match(/Managed by ansible/) }
+    its(:content) { should match(/#{Regexp.escape("RASTREAM_OPTIONS=\"-S 127.0.0.1 -M time 1m -w #{log_dir}/%Y/%m/%d/%H.%M.%S.ra\"")}/) }
+  end
+
+  describe file("/usr/lib/sasl2") do
+    it { should exist }
+    it { should be_symlink }
+    it { should be_linked_to "/usr/lib64/sasl2" }
   end
 when "ubuntu"
   describe file("/etc/default/#{service}") do

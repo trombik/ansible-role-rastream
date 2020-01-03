@@ -5,8 +5,8 @@ Documentation=man:rastream(1)
 After=network-online.target
 
 [Service]
-ExecStart=/usr/bin/rastream $RASTREAM_OPTIONS
-EnvironmentFile=-/etc/{% if ansible_os_family %}default{% elif ansible_os_family == 'RedHat' %}sysconfig{% endif %}/rastream
+ExecStart={% if ansible_os_family == 'Debian' %}/usr/bin/rastream{% else %}/bin/rastream{% endif %} $RASTREAM_OPTIONS
+EnvironmentFile=-/etc/{% if ansible_os_family == 'Debian' %}default{% elif ansible_os_family == 'RedHat' %}sysconfig{% endif %}/rastream
 
 [Install]
 WantedBy=multi-user.target

@@ -47,6 +47,15 @@ passed to `rcctl set rastream`.
 | `__rastream_user` | `argus` |
 | `__rastream_group` | `argus` |
 
+## RedHat
+
+| Variable | Default |
+|----------|---------|
+| `__rastream_service` | `rastream` |
+| `__rastream_package` | `argus-clients` |
+| `__rastream_user` | `argus` |
+| `__rastream_group` | `argus` |
+
 # Dependencies
 
 # Example Playbook
@@ -55,6 +64,9 @@ passed to `rcctl set rastream`.
 ---
 - hosts: localhost
   roles:
+    - role: trombik.redhat_repo
+      when:
+        - ansible_os_family == 'RedHat'
     - trombik.argus
     - trombik.argus_clients
     - trombik.cyrus_sasl
@@ -121,12 +133,20 @@ passed to `rcctl set rastream`.
         rastream_args="-S 127.0.0.1 -M time 1m -w {{ rastream_log_dir }}/%Y/%m/%d/%H.%M.%S.ra"
       Debian: |
         RASTREAM_OPTIONS="-S 127.0.0.1 -M time 1m -w {{ rastream_log_dir }}/%Y/%m/%d/%H.%M.%S.ra"
-      RedHat: ""
+      RedHat: |
+        RASTREAM_OPTIONS="-S 127.0.0.1 -M time 1m -w {{ rastream_log_dir }}/%Y/%m/%d/%H.%M.%S.ra"
     rastream_flags: "{{ os_rastream_flags[ansible_os_family] }}"
     rastream_package: ""
     rastream_user: "{{ argus_user }}"
     rastream_group: "{{ argus_group }}"
     rastream_log_dir: "{{ argus_log_dir }}/rastream"
+    redhat_repo_extra_packages:
+      - epel-release
+    redhat_repo:
+      epel:
+        mirrorlist: "http://mirrors.fedoraproject.org/mirrorlist?repo=epel-{{ ansible_distribution_major_version }}&arch={{ ansible_architecture }}"
+        gpgcheck: yes
+        enabled: yes
 ```
 
 # License

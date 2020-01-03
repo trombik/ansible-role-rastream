@@ -3,3 +3,4 @@
 - name: trombik.argus
 - name: trombik.argus_clients
 - name: trombik.cyrus_sasl
+- name: trombik.redhat_repo
