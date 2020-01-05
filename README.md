@@ -47,6 +47,16 @@ passed to `rcctl set rastream`.
 | `__rastream_user` | `argus` |
 | `__rastream_group` | `argus` |
 
+## OpenBSD
+
+| Variable | Default |
+|----------|---------|
+| `__rastream_service` | `rastream` |
+| `__rastream_package` | `argus-clients` |
+| `__rastream_config_dir` | `/etc` |
+| `__rastream_user` | `_argus` |
+| `__rastream_group` | `_argus` |
+
 ## RedHat
 
 | Variable | Default |
@@ -128,7 +138,7 @@ passed to `rcctl set rastream`.
       {% endif %}
 
     os_rastream_flags:
-      OpenBSD: ""
+      OpenBSD: "-S 127.0.0.1 -M time 1m -w {{ rastream_log_dir }}/%Y/%m/%d/%H.%M.%S.ra"
       FreeBSD: |
         rastream_args="-S 127.0.0.1 -M time 1m -w {{ rastream_log_dir }}/%Y/%m/%d/%H.%M.%S.ra"
       Debian: |
