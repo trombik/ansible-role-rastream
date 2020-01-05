@@ -1,0 +1,19 @@
+#!/bin/ksh
+# Managed by ansible
+
+daemon="/usr/local/bin/rastream"
+
+. /etc/rc.d/rc.subr
+
+pexp="^rastream ${daemon_flags}"
+
+rc_start() {
+	${rcexec} "${daemon} ${daemon_flags} >/dev/null 2>&1 &"
+}
+
+rc_check() {
+	echo pgrep -f "${pexp}"
+	pgrep -f "${pexp}"
+}
+
+rc_cmd $1

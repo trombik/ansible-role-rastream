@@ -20,6 +20,9 @@ when "ubuntu"
 when "redhat"
   systemd_unit_file = "/lib/systemd/system/rastream.service"
   default_group = "root"
+when "openbsd"
+  user = "_argus"
+  group = "_argus"
 end
 
 extra_packages.each do |p|
@@ -66,7 +69,14 @@ when "openbsd"
     it { should be_owned_by default_user }
     it { should be_grouped_into default_group }
     it { should be_mode 644 }
-    its(:content) { should match(/^#{Regexp.escape("#{service}_flags=-4")}/) }
+    its(:content) { should match(/^#{Regexp.escape("#{service}_flags=#{option}")}/) }
+  end
+
+  describe file("/etc/rc.d/rastream") do
+    it { should be_file }
+    it { should be_owned_by default_user }
+    it { should be_grouped_into default_group }
+    it { should be_mode 755 }
   end
 when "redhat"
   describe file("/etc/sysconfig/#{service}") do

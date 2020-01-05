@@ -65,7 +65,7 @@
       {% endif %}
 
     os_rastream_flags:
-      OpenBSD: ""
+      OpenBSD: "-S 127.0.0.1 -M time 1m -w {{ rastream_log_dir }}/%Y/%m/%d/%H.%M.%S.ra"
       FreeBSD: |
         rastream_args="-S 127.0.0.1 -M time 1m -w {{ rastream_log_dir }}/%Y/%m/%d/%H.%M.%S.ra"
       Debian: |
